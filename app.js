@@ -299,31 +299,31 @@
      тому пробуємо одразу, а якщо заблоковано — стартуємо з першого кліку чи тапу.
      Вибір «вимкнено» запам'ятовується. */
   const mbtn = $('#musicBtn');
-  let muted = false;
-  try { muted = localStorage.getItem('yan-muted') === '1'; } catch {}
+  let wantMusic = cfg.autoplay !== false; // за замовчуванням увімкнено
   const setBtn = (on) => {
     mbtn.setAttribute('aria-pressed', String(on));
     mbtn.setAttribute('aria-label', on ? 'Вимкнути звук' : 'Увімкнути звук');
     $('#musicIcon').textContent = on ? '♪' : '🔇';
   };
-  const remember = (m) => { muted = m; try { localStorage.setItem('yan-muted', m ? '1' : '0'); } catch {} };
   async function play() {
-    try { await window.YanMusic.start(); setBtn(true); return true; } catch { setBtn(false); return false; }
+    try { await window.YanMusic.start(); return true; } catch { return false; }
   }
   mbtn.addEventListener('click', async (e) => {
     e.stopPropagation();
-    if (window.YanMusic.playing) { window.YanMusic.stop(); setBtn(false); remember(true); }
-    else { remember(false); await play(); }
+    wantMusic = !wantMusic;
+    setBtn(wantMusic);
+    if (wantMusic) play(); else window.YanMusic.stop();
   });
-  setBtn(false);
-  if (cfg.autoplay !== false && !muted) {
+  setBtn(wantMusic);
+  if (wantMusic) {
+    // пробуємо одразу; якщо браузер блокує звук до першої дії — стартуємо з першого кліку/тапу
     play().then((ok) => {
       if (ok) return;
       const kick = () => {
-        if (!muted && !window.YanMusic.playing) play();
-        ['pointerdown', 'keydown', 'touchstart'].forEach((t) => document.removeEventListener(t, kick, true));
+        if (wantMusic && !window.YanMusic.playing) play();
+        ['pointerdown', 'keydown', 'touchend', 'click'].forEach((t) => document.removeEventListener(t, kick, true));
       };
-      ['pointerdown', 'keydown', 'touchstart'].forEach((t) => document.addEventListener(t, kick, true));
+      ['pointerdown', 'keydown', 'touchend', 'click'].forEach((t) => document.addEventListener(t, kick, true));
     });
   }
 
@@ -383,7 +383,7 @@
     } catch (err) {
       btn.disabled = false; btn.textContent = 'Спробувати ще раз';
       const tg = cfg.socials[0];
-      showFinalHint(`Не вдалося надіслати. Напиши мені напряму: ${tg ? tg.handle : ''}`);
+      showFinalHint(`Не вдалося надіслати. Напиши мені напряму: ${tg ? tg.handle : ''} (${String(err.message || err).slice(0, 140)})`);
     }
   });
 
