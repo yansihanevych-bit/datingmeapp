@@ -1,0 +1,8 @@
+{
+  "name": "yan-match",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Стьобна анкета знайомств Яна",
+  "engines": { "node": ">=18" }
+}

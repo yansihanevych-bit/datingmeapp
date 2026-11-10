@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Анкета Яна</title>
+<meta name="description" content="Стьобна анкета знайомств. Пройди квест, отримай ачівки, можливо, отримай Яна.">
+<meta property="og:title" content="Анкета Яна">
+<meta property="og:description" content="Стьобна анкета знайомств з ачівками і кавою.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☕</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;800;900&family=Rubik:wght@400;500;700&family=Caveat:wght@500;700&family=Press+Start+2P&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-style="cartoon">
+
+<!-- Фон: чашки (80-ті), хмари (відгуки), VHS (фінал) -->
+<div class="bg" aria-hidden="true">
+  <div class="bg-cartoon"><div class="sunburst"></div><div id="cups"></div></div>
+  <div class="bg-cloud"><div class="sky-blob b1"></div><div class="sky-blob b2"></div><div class="sky-blob b3"></div></div>
+  <div class="bg-vhs"><div class="grid-floor"></div><div class="scanlines"></div><div class="vhs-noise"></div></div>
+</div>
+
+<!-- HUD: прогрес, ачівки, музика -->
+<header class="hud">
+  <div class="xp" aria-label="Прогрес анкети">
+    <span class="lvl" id="lvl">LVL 1</span>
+    <div class="xp-bar"><div class="xp-fill" id="xpFill"></div></div>
+  </div>
+  <button class="hud-btn" id="achBtn" type="button" aria-label="Ачівки"><span aria-hidden="true">🏆</span><b id="achCount">0</b></button>
+  <button class="hud-btn" id="musicBtn" type="button" aria-pressed="false" aria-label="Увімкнути музику"><span id="musicIcon" aria-hidden="true">♪</span></button>
+</header>
+
+<main id="app">
+
+  <!-- 0. Вступ -->
+  <section class="screen" data-screen="intro" data-style="cartoon">
+    <div class="card pop">
+      <p class="sticker">18+ · стьоб · кава</p>
+      <h1 class="title">Привіт, найпрекрасніша!</h1>
+      <p class="lead">Ця анкета — стьоб. Прошу пам'ятати про це.</p>
+      <p>Але якщо твоє почуття гумору таке ж прекрасно-єбнуте, як у мене, можливо, у нас буде метч і ти отримаєш нову ачівку для психотерапевта.</p>
+      <button class="btn big" data-next type="button">Я попереджена, погнали</button>
+    </div>
+  </section>
+
+  <!-- 1. Ім'я і вік -->
+  <section class="screen" data-screen="name" data-style="cartoon" hidden>
+    <div class="card pop">
+      <p class="step">Питання 1</p>
+      <label class="q" for="inName">Як тебе звати?</label>
+      <input class="field" id="inName" type="text" maxlength="40" autocomplete="given-name" placeholder="Наприклад, Мія">
+      <p class="q">Як давно тобі 18?</p>
+      <div class="chips" data-group="age" role="radiogroup" aria-label="Як давно тобі 18">
+        <button type="button" class="chip" data-value="Щойно виповнилось">Щойно виповнилось</button>
+        <button type="button" class="chip" data-value="Пару років">Пару років</button>
+        <button type="button" class="chip" data-value="Років 10, не питай">Років 10, не питай</button>
+        <button type="button" class="chip" data-value="Мені вічно 18">Мені вічно 18</button>
+      </div>
+      <p class="hint" id="nameHint" hidden>Ім'я і вік, будь ласка. Я ж не вертоліт, щоб вгадувати.</p>
+      <button class="btn" id="nameNext" type="button">Далі</button>
+    </div>
+  </section>
+
+  <!-- 1b. Про Яна -->
+  <section class="screen" data-screen="about" data-style="cartoon" hidden>
+    <div class="card pop">
+      <p class="step">Приємно, <span class="her-name">незнайомко</span>. Тепер я.</p>
+      <div class="about">
+        <div class="stat"><b>34</b><span>роки</span></div>
+        <div class="stat"><b>163</b><span>см зросту</span></div>
+        <div class="stat"><b>∞</b><span>чашок кави</span></div>
+      </div>
+      <p class="type" data-type>Мене звати Ян, мені 34. Людина високих моральних принципів, але загалом не дуже високий: 163 сантиметри. Люблю книжки, маркетинг, шахи, собак, бокс, відеоігри, татуювання і каву. Багато кави.</p>
+      <p class="type" data-type>Ідентифікую себе як білого цисгендерного чоловіка. Але якщо тобі так некомфортно, моє альтер его — ударний вертоліт «Апач».</p>
+      <button class="btn" data-next type="button">Наступне питання</button>
+    </div>
+  </section>
+
+  <!-- 2. Хобі -->
+  <section class="screen" data-screen="hobby" data-style="cartoon" hidden>
+    <div class="card pop">
+      <p class="step">Питання 2 · можна кілька</p>
+      <p class="q">Які в тебе хобі?</p>
+      <div class="chips" data-group="hobby" data-multi aria-label="Хобі">
+        <button type="button" class="chip" data-value="Читати">Читати</button>
+        <button type="button" class="chip" data-value="Маркетинг">Маркетинг</button>
+        <button type="button" class="chip" data-value="Шахи на роздягання" data-ach="chess">Шахи на роздягання</button>
+        <button type="button" class="chip" data-value="Відеоігри" data-ach="gamer">Відеоігри</button>
+        <button type="button" class="chip" data-value="Спорт">Спорт</button>
+        <button type="button" class="chip" data-value="Татуювання">Татуювання</button>
+        <button type="button" class="chip" data-value="Кава о 3 ночі й сенс життя" data-ach="coffee">Пити каву о 3 ночі й думати про сенс життя</button>
+        <button type="button" class="chip" data-value="Жирогенерація">Жирогенерація</button>
+        <button type="button" class="chip" data-value="Будування замків з оселедця" data-ach="herring">Будування замків з оселедця</button>
+      </div>
+      <label class="sub" for="inHobbyOther">Інше</label>
+      <input class="field" id="inHobbyOther" type="text" maxlength="80" placeholder="Колекціоную колишніх... ой, тобто марки">
+      <p class="reaction" id="hobbyReaction" aria-live="polite"></p>
+      <button class="btn" id="hobbyNext" type="button">Далі</button>
+    </div>
+  </section>
+
+  <!-- 3. Що шукаєш -->
+  <section class="screen" data-screen="seek" data-style="cartoon" hidden>
+    <div class="card pop">
+      <p class="step">Питання 3</p>
+      <p class="q">Чого саме ти шукаєш?</p>
+      <div class="chips stack" data-group="seek" role="radiogroup" aria-label="Чого шукаєш">
+        <button type="button" class="chip" data-value="Я просто ору" data-ach="lol">Я просто ору</button>
+        <button type="button" class="chip" data-value="Хочу стосунків">Хочу стосунків</button>
+        <button type="button" class="chip" data-value="Хочу спілкування">Хочу спілкування</button>
+        <button type="button" class="chip" data-value="Я емо" data-ach="emo">Я емо</button>
+        <button type="button" class="chip" data-value="Люблю пельмені та шукаю інвестора" data-ach="dumplings">Люблю пельмені та шукаю інвестора</button>
+      </div>
+      <div class="answer" id="seekAnswer" hidden>
+        <p class="answer-label">Моя відповідь</p>
+        <p>Якщо звузити й бути дуже конкретним — чудову червоноволосу жінку з 90-х. З чарівним чорним гумором, любов'ю до тварин, пригод і комп'ютерних ігор (бажано).</p>
+        <p>Якщо ти розбираєшся в кіно, я миттєво стану на коліно, тож не забудь уважно подивитися вниз, коли я зникну з твого поля зору… ну, ще більше.</p>
+      </div>
+      <button class="btn" id="seekNext" type="button" hidden>Перейти до відгуків</button>
+    </div>
+  </section>
+
+  <!-- 4. Відгуки (стиль 2: хмари) -->
+  <section class="screen" data-screen="reviews" data-style="cloud" hidden>
+    <div class="cloud-stage">
+      <div class="review-cloud" id="reviewCloud" aria-hidden="true"></div>
+      <article class="profile">
+        <div class="photo-wrap locked" id="photoWrap">
+          <img id="yanPhoto" src="assets/yan.jpg" alt="Фото Яна" width="400" height="400">
+          <div class="lock" id="photoLock"><span aria-hidden="true">🔒</span><p>Щоб відкрити фото, дай відповідь на останні питання</p></div>
+        </div>
+        <h2>Ян, 34</h2>
+        <p class="rating" aria-label="Рейтинг 3.6 з 5"><span aria-hidden="true">★★★½☆</span> 3.6 · 1 482 відгуки</p>
+        <dl class="facts">
+          <div><dt>Робота</dt><dd>Маркетинг. Проєкти, що пішли, повертаються</dd></div>
+          <div><dt>Хобі</dt><dd>Шахи, бокс, відеоігри, тату, собаки</dd></div>
+          <div><dt>Кава</dt><dd>Замість крові</dd></div>
+        </dl>
+        <ul class="socials" id="socials"></ul>
+        <button class="btn" data-next type="button">Відкрити фото</button>
+      </article>
+    </div>
+  </section>
+
+  <!-- 5. Перше побачення -->
+  <section class="screen" data-screen="date" data-style="cloud" hidden>
+    <div class="card soft">
+      <p class="step">Останні питання · 1 з 3</p>
+      <label class="q" for="inDate">Опиши ідеальне перше побачення</label>
+      <textarea class="field" id="inDate" rows="3" maxlength="400" placeholder="Кіно, кава, чи одразу знайомство з мамою?"></textarea>
+      <div class="answer" id="dateAnswer" hidden>
+        <p class="answer-label">Для мене</p>
+        <p>Кава, прогулянка і суперечка про те, який фільм Тарантіно найкращий. Якщо ти скажеш «Доказ смерті», весілля скасовується.</p>
+      </div>
+      <button class="btn" id="dateNext" type="button">Відповісти</button>
+    </div>
+  </section>
+
+  <!-- 6. Суперсила -->
+  <section class="screen" data-screen="power" data-style="cloud" hidden>
+    <div class="card soft">
+      <p class="step">Останні питання · 2 з 3</p>
+      <p class="q">Яку суперсилу ти б обрала?</p>
+      <div class="chips stack" data-group="power" role="radiogroup" aria-label="Суперсила">
+        <button type="button" class="chip" data-value="Перетворювати незручну паузу на ще незручнішу">Перетворювати будь-яку незручну паузу на ще незручнішу</button>
+        <button type="button" class="chip" data-value="Всі люди какають одночасно з тобою" data-ach="poop">Всі люди какають одночасно з тобою</button>
+        <button type="button" class="chip" data-value="Впізнають усі продавці шаурми, але жоден колишній">Тебе впізнають усі продавці шаурми, але жоден колишній</button>
+        <button type="button" class="chip" data-value="Розуміти тварин, але не натяки">Розуміти мову тварин, але не розуміти натяки</button>
+      </div>
+      <div class="answer" id="powerAnswer" hidden>
+        <p class="answer-label">У мене їх декілька</p>
+        <ul>
+          <li>Безпомилково обираю найповільнішу касу в АТБ</li>
+          <li>Будь-яка жінка, яка мені подобається, вирішує, що я її найкращий друг</li>
+          <li>Мій зріст ідеально збігається з висотою чужих ліктів у метро</li>
+        </ul>
+      </div>
+      <button class="btn" id="powerNext" type="button" hidden>Далі</button>
+    </div>
+  </section>
+
+  <!-- 7. Прапорці -->
+  <section class="screen" data-screen="flags" data-style="cloud" hidden>
+    <div class="card soft">
+      <p class="step">Останні питання · 3 з 3</p>
+      <label class="q" for="inGreen"><span class="flag green" aria-hidden="true"></span>Твій зелений прапорець?</label>
+      <input class="field" id="inGreen" type="text" maxlength="160" placeholder="Завжди ділюсь картоплею фрі">
+      <label class="q" for="inRed"><span class="flag red" aria-hidden="true"></span>Твій червоний прапорець?</label>
+      <input class="field" id="inRed" type="text" maxlength="160" placeholder="Кажу «пішли в кіно» і обираю «Доказ смерті»">
+      <p class="hint" id="flagsHint" hidden>Хоча б один прапорець. Я ж свої показав.</p>
+      <button class="btn" id="flagsNext" type="button">Розблокувати фото</button>
+    </div>
+  </section>
+
+  <!-- 8. Фінал (стиль 3: VHS 90-х) -->
+  <section class="screen" data-screen="final" data-style="vhs" hidden>
+    <div class="card vhs-card">
+      <p class="rec"><span class="dot" aria-hidden="true"></span>REC · ФІНАЛЬНИЙ КРОК</p>
+      <div class="final-photo"><img id="yanPhotoFinal" src="assets/yan.jpg" alt="Фото Яна, розблоковане" width="200" height="200"></div>
+      <h2 class="glitch" data-text="Що ж.">Що ж.</h2>
+      <p>Усе, що ти пройшла, було жахливим і складним… І все це заради нього? Таке питання могло виникнути в твоїй голові. Але що зроблено, те зроблено.</p>
+      <p>Залишай свої контакти і фото. Скоро напишу.</p>
+
+      <form id="finalForm" novalidate>
+        <label class="photo-drop" for="inPhoto" id="photoDrop">
+          <input id="inPhoto" type="file" accept="image/*">
+          <img id="photoPreview" alt="" hidden>
+          <span id="photoDropText">Завантаж своє фото</span>
+        </label>
+        <label class="sub" for="inContact">Нік у Telegram або Instagram</label>
+        <input class="field" id="inContact" type="text" maxlength="80" placeholder="@твій_нік" required>
+        <label class="consent" for="inConsent"><input id="inConsent" type="checkbox"> Мені є 18, і я погоджуюсь, що Ян побачить мої відповіді, фото і нік</label>
+        <p class="hint" id="finalHint" hidden></p>
+        <button class="btn big" id="sendBtn" type="submit">Надіслати і чекати</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- 9. Готово -->
+  <section class="screen" data-screen="done" data-style="vhs" hidden>
+    <div class="card vhs-card center">
+      <p class="rec"><span class="dot" aria-hidden="true"></span>ЗБЕРЕЖЕНО</p>
+      <p class="match-label">Сумісність</p>
+      <p class="match" id="matchPct">0%</p>
+      <p id="matchText"></p>
+      <h3>Твої ачівки</h3>
+      <ul class="ach-list" id="achList"></ul>
+      <p class="thanks">Дякую, що приділила цьому час. Гарного дня!</p>
+      <p class="small">Твої відповіді й фото вже в мене в Telegram. А тепер піди випий кави. Я вже.</p>
+    </div>
+  </section>
+</main>
+
+<!-- Міні-плеєр YouTube: має бути видимим за правилами YouTube -->
+<div class="yt-dock" id="ytDock" hidden><div id="ytPlayer"></div></div>
+
+<!-- Тост ачівки -->
+<div class="toast-wrap" id="toasts" aria-live="polite"></div>
+
+<!-- Діалог зі списком ачівок -->
+<dialog id="achDialog">
+  <h3>Ачівки</h3>
+  <ul class="ach-list" id="achDialogList"></ul>
+  <button class="btn" type="button" id="achClose">Закрити</button>
+</dialog>
+
+<!-- Панель налаштувань анімації: відкривається через ?tune в адресі -->
+<aside class="tune" id="tune" hidden>
+  <h3>Налаштування наживо</h3>
+  <div id="tuneFields"></div>
+  <p class="tune-label">Перейти на екран</p>
+  <div class="tune-jump" id="tuneJump"></div>
+  <button class="btn small" type="button" id="tuneCopy">Скопіювати для config.js</button>
+  <p class="tune-out" id="tuneOut" aria-live="polite"></p>
+</aside>
+
+<script src="config.js"></script>
+<script src="music.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
