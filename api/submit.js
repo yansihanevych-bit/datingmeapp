@@ -4,10 +4,19 @@
 const esc = (s) => String(s ?? '').replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])).slice(0, 600);
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+  const token = (process.env.TELEGRAM_BOT_TOKEN || '').trim();
+  const chatId = (process.env.TELEGRAM_CHAT_ID || '').trim();
 
-  const token = process.env.TELEGRAM_BOT_TOKEN;
-  const chatId = process.env.TELEGRAM_CHAT_ID;
+  // Діагностика: відкрий /api/submit у браузері
+  if (req.method === 'GET') {
+    let bot = null;
+    if (token) {
+      try { const r = await fetch(`https://api.telegram.org/bot${token}/getMe`); const j = await r.json(); bot = j.ok ? '@' + j.result.username : 'токен не приймається: ' + j.description; }
+      catch (e) { bot = 'не вдалося звернутися до Telegram'; }
+    }
+    return res.status(200).json({ tokenSet: !!token, chatIdSet: !!chatId, chatId: chatId ? chatId.replace(/\d(?=\d{3})/g, '•') : null, bot });
+  }
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
   if (!token || !chatId) return res.status(500).json({ error: 'Telegram не налаштований: додай TELEGRAM_BOT_TOKEN і TELEGRAM_CHAT_ID у Vercel' });
 
   const b = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
@@ -38,7 +47,10 @@ export default async function handler(req, res) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'HTML', disable_web_page_preview: true }),
     });
-    if (!r.ok) throw new Error('sendMessage ' + (await r.text()));
+    if (!r.ok) {
+      const j = await r.json().catch(() => ({}));
+      throw new Error('Telegram: ' + (j.description || r.status));
+    }
 
     if (typeof b.photo === 'string' && b.photo.startsWith('data:image/')) {
       const base64 = b.photo.split(',')[1];
@@ -52,7 +64,7 @@ export default async function handler(req, res) {
     return res.status(200).json({ ok: true });
   } catch (e) {
     console.error(e);
-    return res.status(502).json({ error: 'Не вдалося надіслати в Telegram' });
+    return res.status(502).json({ error: String(e.message || e) });
   }
 }
 
